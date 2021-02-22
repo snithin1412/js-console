@@ -13,7 +13,7 @@ let totCount = 0;
 
 const keyUps = fromEvent(input, 'keyup');
 const keyDowns = fromEvent(input, 'keydown');
-const keyPresses = keyUps.pipe(
+const keyEnter = keyUps.pipe(
     filter((e: KeyboardEvent) => e.keyCode === 13)
 );
 
@@ -39,13 +39,18 @@ keyDowns.pipe(
         }
     })
 
-keyPresses.subscribe(function (ev) {
-    let value = (<HTMLInputElement>event.target).value;
+keyEnter.subscribe(function (ev) {
+    let value = (<HTMLInputElement>event.target).value.trim();
     let eValue = "";
     if (value) {
-    if (!/(var|let|const)/.test(value)) {
-        eValue = `print(${value})`;
-    }
+        if (value == "clear") {
+            array.unshift(value);
+            document.querySelector('input').value = "";
+            return document.getElementById("output").innerHTML = "";
+        }
+        else if (!/(var|let|const)/.test(value)) {
+            eValue = `print(${value})`;
+        }
     }
     try {
         const body = acorn.parse(eValue || value, { ecmaVersion: 2020 }).body;
@@ -62,5 +67,5 @@ keyPresses.subscribe(function (ev) {
     catch {
         console.log("error");
     }
-    document.querySelector('input').value = " ";
+    document.querySelector('input').value = "";
 })
